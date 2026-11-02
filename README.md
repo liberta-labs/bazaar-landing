@@ -63,7 +63,7 @@ started by hand from there.
 3. **Trading on Bazaar** — four trader-facing differences (no account, gasless, non-crypto markets, isolated collateral)
 4. **Run by independent operators** — the six-role wheel with descriptions
 5. **Waitlist** — "Where we are" status strip + Brevo-connected email capture
-6. **Footer** — motto, license/status line, GitHub, Docs, Contact
+6. **Footer** — motto, developer credit, GitHub, Docs, Contact
 
 ## How things work
 
@@ -158,7 +158,7 @@ Bing Webmaster Tools (both need a DNS TXT record to verify the domain). Bump `<l
 | Link | Destination |
 | --- | --- |
 | Docs (nav, hero, footer) | `https://docs.bazaar.finance` |
-| GitHub (nav, footer) | `https://github.com/bazaar-finance/bazaar` |
+| GitHub (nav, footer) | `https://github.com/liberta-labs/bazaar` |
 | Contact (footer) | `mailto:bazaarfi@proton.me` |
 
 ## Notes

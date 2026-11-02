@@ -30,7 +30,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <!-- Version query on both assets: bump it whenever styles.css or script.js changes, so a visitor
        never pairs fresh HTML with a stale cached script or stylesheet during the CDN's 10-minute window. -->
-  <link rel="stylesheet" href="styles.css?v=20261028.7" />
+  <link rel="stylesheet" href="styles.css?v=20261101" />
   <!-- Set theme before first paint to avoid a flash -->
   <script>
     try {
@@ -68,7 +68,7 @@
       </a>
       <div class="nav__links">
         <a href="https://docs.bazaar.finance" target="_blank" rel="noopener" class="nav__link">Docs</a>
-        <a href="https://github.com/bazaar-finance/bazaar" target="_blank" rel="noopener" class="nav__link">GitHub</a>
+        <a href="https://github.com/liberta-labs/bazaar" target="_blank" rel="noopener" class="nav__link">GitHub</a>
         <a href="#waitlist" class="btn-get">Get access</a>
         <button id="themeToggle" class="btn-toggle" type="button" aria-label="Toggle color theme">☀️</button>
       </div>
@@ -318,7 +318,7 @@
         <div class="roles">
           <div class="role" data-reveal style="--reveal-delay:0.00s"><span class="role__num">01</span><div><h4 class="role__name">Integrators</h4><p class="role__desc">Build frontends, APIs, bots and tools on top of the protocol.</p></div></div>
           <div class="role" data-reveal style="--reveal-delay:0.06s"><span class="role__num">02</span><div><h4 class="role__name">Listers</h4><p class="role__desc">Propose any asset with a live price feed as a new market.</p></div></div>
-          <div class="role" data-reveal style="--reveal-delay:0.12s"><span class="role__num">03</span><div><h4 class="role__name">Insurers</h4><p class="role__desc">Deposit into a market's insurance fund and earn a share of its fees. In return you take the first loss when liquidations fall short.</p></div></div>
+          <div class="role" data-reveal style="--reveal-delay:0.12s"><span class="role__num">03</span><div><h4 class="role__name">Insurers</h4><p class="role__desc">Deposit into a market's insurance fund and earn a share of its fees. In return they take the first loss when liquidations fall short.</p></div></div>
           <div class="role" data-reveal style="--reveal-delay:0.18s"><span class="role__num">04</span><div><h4 class="role__name">Liquidators</h4><p class="role__desc">Close out accounts that fall below their margin.</p></div></div>
           <div class="role" data-reveal style="--reveal-delay:0.24s"><span class="role__num">05</span><div><h4 class="role__name">Keepers</h4><p class="role__desc">Run a bot that fires stop orders, sells off liquidated positions and keeps prices fresh.</p></div></div>
           <div class="role" data-reveal style="--reveal-delay:0.30s"><span class="role__num">06</span><div><h4 class="role__name">ADL Bots</h4><p class="role__desc">When losses outgrow a market's insurance fund, auto-deleveraging closes the most profitable positions against them to keep the market solvent.</p></div></div>
@@ -359,9 +359,9 @@
   <footer class="footer">
     <div class="footer__inner">
       <p class="footer__tag">Perpetua et firma libertas</p>
-      <p class="footer__status">Open source under <a href="https://github.com/bazaar-finance/bazaar/blob/master/LICENSE" target="_blank" rel="noopener">AGPL-3.0</a> · Pre-audit · Not yet deployed</p>
+      <p class="footer__status">Bazaar is developed by Liberta Labs</p>
       <div class="footer__links">
-        <a href="https://github.com/bazaar-finance/bazaar" target="_blank" rel="noopener" class="footer__link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path><path d="M9 18c-4.51 2-5-2-7-2"></path></svg> GitHub</a>
+        <a href="https://github.com/liberta-labs/bazaar" target="_blank" rel="noopener" class="footer__link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path><path d="M9 18c-4.51 2-5-2-7-2"></path></svg> GitHub</a>
         <a href="https://docs.bazaar.finance" target="_blank" rel="noopener" class="footer__link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg> Docs</a>
         <a href="mailto:bazaarfi@proton.me" target="_top" class="footer__link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg> Contact</a>
       </div>

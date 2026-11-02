@@ -322,7 +322,6 @@ input { font-family: inherit; }
 .footer__links { display: flex; align-items: center; gap: 20px; font-size: 14px; font-weight: 700; }
 .footer__link { display: flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.4); }
 .footer__status { font-size: 13px; font-weight: 700; text-align: center; color: rgba(255,255,255,0.3); }
-.footer__status a { color: rgba(255,255,255,0.45); text-decoration: underline; text-underline-offset: 3px; }
 
 /* ---------- Scroll reveal ----------
    script.js adds .has-reveal to <html> only when it can run the observer and motion is
