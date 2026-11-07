@@ -397,14 +397,45 @@
     window.addEventListener("load", sweep);
   }
 
-  /* ---------- Node-network backdrop ---------- */
-  // A faint, slowly drifting mesh of nodes behind the "Trading on Bazaar" section: nodes link
-  // whenever they drift within reach of each other, so the network keeps re-forming with no hub.
-  // It runs only while the section is on screen and the tab is visible, and draws a single still
-  // frame under reduced motion.
+  /* ---------- Node-network backdrops ---------- */
+  // Canvas backdrops in the theme's accent color, idle whenever their section is off screen or the
+  // tab is hidden, and drawn as a single still frame under reduced motion:
+  //  - default (Trading on Bazaar): a faint mesh of slowly drifting nodes that link whenever they
+  //    come within reach of each other, so the network keeps re-forming with no hub.
+  //  - data-mode="web" (FAQ): a fixed, interconnected web whose nodes slowly blink out of step.
   function initMesh() {
-    var canvas = document.querySelector(".mesh-bg");
-    if (!canvas || !canvas.getContext) return;
+    [].forEach.call(document.querySelectorAll(".mesh-bg"), function (canvas) {
+      if (!canvas.getContext) return;
+      if (canvas.getAttribute("data-mode") === "web") setupWeb(canvas);
+      else setupMesh(canvas);
+    });
+  }
+
+  function accentRgb() {
+    var hex = getComputedStyle(document.documentElement).getPropertyValue("--fg").trim();
+    var m = /^#?([0-9a-f]{6})$/i.exec(hex);
+    if (!m) return "253,224,0";
+    var n = parseInt(m[1], 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255].join(",");
+  }
+
+  // Calls onChange(true) while the section is on screen and the tab is visible, onChange(false) otherwise.
+  function whileVisible(section, onChange) {
+    var onScreen = false;
+    function update() { onChange(onScreen && !document.hidden); }
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (entries) { onScreen = entries[0].isIntersecting; update(); }).observe(section);
+    } else { onScreen = true; update(); }
+    document.addEventListener("visibilitychange", update);
+  }
+
+  // The theme toggle swaps --fg; backdrops re-read it so they follow dark/light.
+  function onThemeChange(fn) {
+    var toggle = document.getElementById("themeToggle");
+    if (toggle) toggle.addEventListener("click", function () { setTimeout(fn, 0); });
+  }
+
+  function setupMesh(canvas) {
     var section = canvas.parentElement;
     var ctx = canvas.getContext("2d");
     var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -412,16 +443,8 @@
     var LINK = 150;          // px: nodes closer than this are joined
     var SPEED = 12;          // px per second
     var NODE_ALPHA = 0.32, LINE_ALPHA = 0.16;
-    var w = 0, h = 0, nodes = [], rgb = "253,224,0";
-    var running = false, onScreen = false, lastT = 0, rafId = 0;
-
-    function readColor() {
-      var hex = getComputedStyle(document.documentElement).getPropertyValue("--fg").trim();
-      var m = /^#?([0-9a-f]{6})$/i.exec(hex);
-      if (!m) return;
-      var n = parseInt(m[1], 16);
-      rgb = [(n >> 16) & 255, (n >> 8) & 255, n & 255].join(",");
-    }
+    var w = 0, h = 0, nodes = [], rgb = accentRgb();
+    var running = false, lastT = 0, rafId = 0;
 
     function size() {
       var dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -466,21 +489,139 @@
       rafId = requestAnimationFrame(step);
     }
 
-    function update() {
-      var should = onScreen && !document.hidden && !reduced;
-      if (should && !running) { running = true; lastT = 0; rafId = requestAnimationFrame(step); }
-      else if (!should && running) { running = false; cancelAnimationFrame(rafId); }
+    function setRunning(on) {
+      on = on && !reduced;
+      if (on && !running) { running = true; lastT = 0; rafId = requestAnimationFrame(step); }
+      else if (!on && running) { running = false; cancelAnimationFrame(rafId); }
     }
 
-    readColor(); size(); draw();
+    size(); draw();
     if ("ResizeObserver" in window) new ResizeObserver(function () { size(); draw(); }).observe(section);
-    if ("IntersectionObserver" in window) {
-      new IntersectionObserver(function (entries) { onScreen = entries[0].isIntersecting; update(); }).observe(section);
-    } else { onScreen = true; update(); }
-    document.addEventListener("visibilitychange", update);
-    // The theme toggle swaps --fg; re-read it so the mesh follows dark/light.
-    var toggle = document.getElementById("themeToggle");
-    if (toggle) toggle.addEventListener("click", function () { setTimeout(function () { readColor(); draw(); }, 0); });
+    whileVisible(section, setRunning);
+    onThemeChange(function () { rgb = accentRgb(); draw(); });
+  }
+
+  // A fixed web: nodes on a loosely jittered grid, each joined to its nearest neighbours. Only the
+  // nodes change, each brightening and dimming on its own slow cycle. The web is laid out once per
+  // width over more height than the section has, so a section that grows (an FAQ answer opening)
+  // uncovers more of the same web instead of reshuffling it. Its lines are drawn once into an
+  // offscreen canvas, so each frame only composites them and redraws the nodes.
+  function setupWeb(canvas) {
+    var section = canvas.parentElement;
+    var ctx = canvas.getContext("2d");
+    var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    var SPACING = 110;                    // px between nodes before jitter
+    var NEIGHBOURS = 3;                   // each node links to this many nearest nodes
+    var EXTRA = 1200;                     // px of web laid out below the section's current height
+    var LINE_ALPHA = 0.07;
+    var NODE_RADIUS = 3;                  // px
+    var NODE_MIN = 0.08, NODE_MAX = 0.55; // node opacity at the dim and bright ends of a blink
+    var BLINK_MIN = 3, BLINK_MAX = 7;     // seconds per blink, picked per node
+    var w = 0, h = 0, dpr = 1, nodes = [], edges = [], laidOutForWidth = 0;
+    var rgb = accentRgb(), lines = document.createElement("canvas");
+    var running = false, rafId = 0;
+
+    function layout() {
+      var fieldH = h + EXTRA;
+      var cols = Math.max(2, Math.round(w / SPACING)), rows = Math.max(2, Math.round(fieldH / SPACING));
+      var cw = w / cols, rh = fieldH / rows;
+      nodes = [];
+      for (var r = 0; r <= rows; r++) {
+        for (var c = 0; c <= cols; c++) {
+          nodes.push({
+            x: (c + (Math.random() - 0.5) * 0.7) * cw,
+            y: (r + (Math.random() - 0.5) * 0.7) * rh,
+            period: BLINK_MIN + Math.random() * (BLINK_MAX - BLINK_MIN),
+            phase: Math.random() * Math.PI * 2
+          });
+        }
+      }
+      var reach = Math.pow(SPACING * 2.5, 2), seen = {};
+      edges = [];
+      nodes.forEach(function (a, i) {
+        var near = [];
+        nodes.forEach(function (b, j) {
+          if (i === j) return;
+          var dx = a.x - b.x, dy = a.y - b.y, d = dx * dx + dy * dy;
+          if (d < reach) near.push([d, j]);
+        });
+        near.sort(function (p, q) { return p[0] - q[0]; });
+        near.slice(0, NEIGHBOURS).forEach(function (n) {
+          var key = i < n[1] ? i + "-" + n[1] : n[1] + "-" + i;
+          if (!seen[key]) { seen[key] = 1; edges.push([i, n[1]]); }
+        });
+      });
+    }
+
+    function drawLines() {
+      var lc = lines.getContext("2d");
+      lc.setTransform(dpr, 0, 0, dpr, 0, 0);
+      lc.clearRect(0, 0, w, h);
+      lc.lineWidth = 1;
+      lc.strokeStyle = "rgba(" + rgb + "," + LINE_ALPHA + ")";
+      lc.beginPath();
+      edges.forEach(function (e) {
+        var a = nodes[e[0]], b = nodes[e[1]];
+        if (a.y > h + SPACING && b.y > h + SPACING) return;
+        lc.moveTo(a.x, a.y); lc.lineTo(b.x, b.y);
+      });
+      lc.stroke();
+    }
+
+    function size() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = section.clientWidth; h = section.clientHeight;
+      canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
+      lines.width = canvas.width; lines.height = canvas.height;
+      if (laidOutForWidth !== w) { laidOutForWidth = w; layout(); }
+      drawLines();
+    }
+
+    function draw(t) {
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(lines, 0, 0);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var secs = (t || 0) / 1000;
+      nodes.forEach(function (p) {
+        if (p.y > h + 4) return;
+        // Squaring the wave keeps a node dim most of the time, so brightening reads as a blink.
+        var wave = reduced ? 0.35 : Math.pow(0.5 + 0.5 * Math.sin(secs * 2 * Math.PI / p.period + p.phase), 2);
+        ctx.fillStyle = "rgba(" + rgb + "," + (NODE_MIN + (NODE_MAX - NODE_MIN) * wave).toFixed(3) + ")";
+        ctx.beginPath(); ctx.arc(p.x, p.y, NODE_RADIUS, 0, Math.PI * 2); ctx.fill();
+      });
+    }
+
+    function step(t) {
+      if (!running) return;
+      draw(t);
+      rafId = requestAnimationFrame(step);
+    }
+
+    function setRunning(on) {
+      on = on && !reduced;
+      if (on && !running) { running = true; rafId = requestAnimationFrame(step); }
+      else if (!on && running) { running = false; cancelAnimationFrame(rafId); }
+    }
+
+    size(); draw(0);
+    if ("ResizeObserver" in window) new ResizeObserver(function () { size(); draw(performance.now()); }).observe(section);
+    whileVisible(section, setRunning);
+    onThemeChange(function () { rgb = accentRgb(); drawLines(); draw(performance.now()); });
+  }
+
+  /* ---------- FAQ: one answer open at a time ---------- */
+  // The questions share name="faq", which makes them exclusive natively in current browsers;
+  // this does the same for browsers that predate it.
+  function initFaq() {
+    var items = document.querySelectorAll(".faq__item");
+    [].forEach.call(items, function (d) {
+      d.addEventListener("toggle", function () {
+        if (!d.open) return;
+        [].forEach.call(items, function (o) { if (o !== d && o.open) o.open = false; });
+      });
+    });
   }
 
   /* ---------- Analytics ---------- */
@@ -520,6 +661,7 @@
     initFeatures();
     initReveal();
     initMesh();
+    initFaq();
     initTicker();
     renderPrices();
     fetchCrypto();

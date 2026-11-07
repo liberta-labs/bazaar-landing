@@ -62,7 +62,7 @@ started by hand from there.
 2. **What is Bazaar** — positioning + ten feature cards (horizontal marquee)
 3. **Trading on Bazaar** — four trader-facing differences (no account, gasless, non-crypto markets, isolated collateral)
 4. **Run by independent operators** — the six-role wheel with descriptions
-5. **Frequently asked questions** — eight collapsible questions (native `<details>`, no JS)
+5. **Frequently asked questions** — eight collapsible questions, one open at a time (native `<details name="faq">`, with a small JS fallback)
 6. **Waitlist** — "Where we are" status strip + Brevo-connected email capture
 7. **Footer** — motto, developer credit, GitHub, Docs, Contact
 
@@ -112,10 +112,13 @@ line and styles (stroke, color) come from the card.
 an optional `--reveal-delay` staggers a group. `initReveal()` adds the hiding class to `<html>`
 itself, so with JS off or reduced motion on, everything is simply visible.
 
-**Node-network backdrop.** A faint mesh of drifting nodes sits behind "Trading on Bazaar" on a
-`<canvas class="mesh-bg">`, drawn by `initMesh()` in the theme's accent color. It runs only while
-the section is on screen and the tab is visible, and draws one still frame under reduced motion.
-Density, speed, link distance and opacity are the constants at the top of `initMesh()`.
+**Node-network backdrops.** Two `<canvas class="mesh-bg">` backdrops, drawn by `initMesh()` in the
+theme's accent color. Behind "Trading on Bazaar", a faint mesh of drifting nodes links up as nodes
+come near each other (`setupMesh()`). Behind the FAQ, `data-mode="web"` draws a fixed, interconnected
+web whose nodes slowly blink out of step (`setupWeb()`); the web is laid out over extra height, so
+opening an answer never reshuffles it. Both idle when off screen or in a hidden tab, and draw one
+still frame under reduced motion. Density, speed, blink timing and opacity are the constants at the
+top of each function. An open FAQ question also gets a thin accent bar on its left edge.
 
 **Status strip.** The four stages in the waitlist section are static markup. Finished stages carry
 `is-done` (filled dot); the current one carries `is-now` (a blinking hollow ring). To advance, move

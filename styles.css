@@ -271,9 +271,12 @@ input { font-family: inherit; }
    Native <details>/<summary>: keyboard- and screen-reader-friendly with no JS. The marker is a
    plus drawn in CSS that turns into a cross when the question is open. */
 .faq { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+/* Opaque, so the web behind the section never shows through a question: the same page color,
+   section tint and surface tint the translucent box used to show, stacked into one solid fill. */
 .faq__item {
-  border-radius: 16px; background: var(--surface); border: 1px solid var(--surface-border);
-  transition: background-color 0.5s, border-color 0.5s;
+  position: relative; border-radius: 16px; border: 1px solid var(--surface-border);
+  background: linear-gradient(var(--surface), var(--surface)), linear-gradient(var(--section-bg), var(--section-bg)), var(--bg);
+  transition: border-color 0.5s;
 }
 .faq__q {
   list-style: none; cursor: pointer; position: relative;
@@ -291,6 +294,12 @@ input { font-family: inherit; }
 .faq__a { padding: 0 20px 20px; font-size: 15px; line-height: 1.6; color: var(--muted); transition: color 0.5s; }
 .faq__item[open] .faq__a { animation: faq-open 0.3s ease; }
 @keyframes faq-open { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+/* Accent bar on the open question's left edge, so it is clear which answer you are reading. */
+.faq__item::before {
+  content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 3px; border-radius: 0 3px 3px 0;
+  background: var(--fg); opacity: 0; transform: scaleY(0.4); transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.faq__item[open]::before { opacity: 1; transform: none; }
 .faq__link { text-decoration: underline; text-underline-offset: 3px; }
 /* A "Learn more" link on its own line under an answer; fit-content keeps the click target to the text. */
 .faq__more { display: block; width: fit-content; margin-top: 8px; }
@@ -421,7 +430,7 @@ input { font-family: inherit; }
 /* Respect reduced-motion preferences */
 @media (prefers-reduced-motion: reduce) {
   .ticker__track, .features__track, .net__orbit, .net__node, .badge__dot, .status__dot, .status__step::before, .faq__a { animation: none !important; }
-  .faq__q::before, .faq__q::after { transition: none; }
+  .faq__q::before, .faq__q::after, .faq__item::before { transition: none; }
   .features { overflow-x: auto; }
   html { scroll-behavior: auto; }
   /* No price-flash pulse either — numbers still update, just without the blink. */
