@@ -113,6 +113,26 @@
     var lastPlayed = 0;
     var COOLDOWN_MS = 1000;
 
+    // The clip is fetched only once the page has settled, a few seconds after load: visitors who
+    // leave straight away never download it, and anyone who stays finds it ready for an instant
+    // hover. A hover or tap that comes sooner starts the download itself, and the glitch keeps
+    // flickering until the clip can play, so the box never shows blank.
+    var LOAD_DELAY_MS = 2500;
+    var requested = false, ready = false, pointerIn = false, tapPending = false, waiting = false;
+    // Set once and kept: after the clip ends the element can report it is short of data again,
+    // which must not send the next hover back to waiting for a "canplay" that never comes.
+    if (video) video.addEventListener("canplay", function () { ready = true; });
+
+    function loadVideo() {
+      if (!video || requested) return;
+      requested = true;
+      video.preload = "auto";
+      video.src = video.getAttribute("data-src");
+      video.load();
+    }
+    if (document.readyState === "complete") setTimeout(loadVideo, LOAD_DELAY_MS);
+    else window.addEventListener("load", function () { setTimeout(loadVideo, LOAD_DELAY_MS); });
+
     function schedule() {
       if (hovered) return;
       var delay = 2000 + Math.random() * 2000;
@@ -135,6 +155,18 @@
     }
 
     function startPlay() {
+      if (video && !ready) {
+        loadVideo();
+        if (!waiting) {
+          waiting = true;
+          video.addEventListener("canplay", function () {
+            waiting = false;
+            if (pointerIn || tapPending) startPlay();
+          }, { once: true });
+        }
+        return;
+      }
+      tapPending = false;
       var now = Date.now();
       if (now - lastPlayed < COOLDOWN_MS) return;
       lastPlayed = now;
@@ -153,17 +185,17 @@
       }
     }
 
-    box.addEventListener("mouseenter", startPlay);
+    box.addEventListener("mouseenter", function () { pointerIn = true; startPlay(); });
 
     // Touch devices have no hover — let a tap play the snek video, then it
     // ends on its own via the "ended" handler below. Gated to no-hover
     // pointers so desktop mouse taps don't double-fire alongside mouseenter.
     var touchOnly = window.matchMedia && window.matchMedia("(hover: none)").matches;
     box.addEventListener("click", function () {
-      if (touchOnly) startPlay();
+      if (touchOnly) { tapPending = true; startPlay(); }
     });
 
-    box.addEventListener("mouseleave", endHover);
+    box.addEventListener("mouseleave", function () { pointerIn = false; endHover(); });
     if (video) video.addEventListener("ended", endHover);
 
     schedule();

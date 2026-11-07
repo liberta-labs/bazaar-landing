@@ -32,7 +32,7 @@ bazaar-landing/
     ├── bazaar-logo-icon.png      # Favicon
     ├── bazaar-emblem-yellow.png  # Center emblem of the roles wheel
     ├── og-image.png              # 1200×630 Open Graph / Twitter card image
-    └── snek.mp4                  # Plays inside the hero glitch box
+    └── snek.mp4                  # Plays inside the hero glitch box (cropped to the visible strip, ~460 KB)
 ```
 
 ## Run it
@@ -100,6 +100,12 @@ symbol.
 **Glitch box.** The "without permission." phrase flickers with chromatic aberration every
 2–4 seconds for 400ms. Hovering it (desktop) or tapping it (touch) plays `snek.mp4` once
 inline, pausing the flicker until the clip ends. A 1s cooldown prevents retriggering.
+The clip downloads about 2.5 s after the page loads (`LOAD_DELAY_MS` in `initGlitch()`), so
+visitors who leave at once never fetch it; an earlier hover starts the download and keeps the
+glitch running until it can play. The file is cropped to the middle 752×208 strip, the most any
+screen size shows under `object-fit: cover`, with no audio track. Re-encode with:
+`ffmpeg -i in.mp4 -map 0:v:0 -an -vf "crop=752:208:0:104" -c:v libx264 -preset veryslow -crf 29
+-pix_fmt yuv420p -movflags +faststart snek.mp4`.
 
 **Feature marquee.** Auto-scrolls continuously and can be grabbed and dragged left or right;
 releasing resumes the auto-scroll. Driven by `requestAnimationFrame` in `initFeatures()`.

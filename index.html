@@ -30,7 +30,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <!-- Version query on both assets: bump it whenever styles.css or script.js changes, so a visitor
        never pairs fresh HTML with a stale cached script or stylesheet during the CDN's 10-minute window. -->
-  <link rel="stylesheet" href="styles.css?v=20261109.2" />
+  <link rel="stylesheet" href="styles.css?v=20261110" />
   <!-- Set theme before first paint to avoid a flash -->
   <script>
     try {
@@ -89,7 +89,7 @@
           <span class="hero__glitch-wrap">
             <span class="glitch" id="glitchBox">
               <span class="glitch__base">without permission.</span>
-              <video class="glitch__video" id="glitchVideo" src="assets/snek.mp4" muted playsinline preload="auto"></video>
+              <video class="glitch__video" id="glitchVideo" data-src="assets/snek.mp4?v=20261110" muted playsinline preload="none"></video>
               <span class="glitch__layers" aria-hidden="true">
                 <span class="glitch__layer glitch__layer--a">without permission.</span>
                 <span class="glitch__layer glitch__layer--b">without permission.</span>
@@ -329,7 +329,7 @@
   </section>
 
   <!-- ===================== FAQ ===================== -->
-  <section id="faq" class="section section--band section--fit has-mesh">
+  <section id="faq" class="section section--fit has-mesh">
     <canvas class="mesh-bg" data-mode="web" aria-hidden="true"></canvas>
     <div class="container">
       <div class="sec__head" data-reveal>
@@ -414,7 +414,7 @@
     </div>
   </footer>
 
-  <script src="script.js?v=20261110" defer></script>
+  <script src="script.js?v=20261110.2" defer></script>
 
   <!-- GoatCounter — cookieless, no consent banner required. Counts the pageview on load;
        click events are wired up in initAnalytics() in script.js. -->

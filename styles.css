@@ -271,11 +271,11 @@ input { font-family: inherit; }
    Native <details>/<summary>: keyboard- and screen-reader-friendly with no JS. The marker is a
    plus drawn in CSS that turns into a cross when the question is open. */
 .faq { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
-/* Opaque, so the web behind the section never shows through a question: the same page color,
-   section tint and surface tint the translucent box used to show, stacked into one solid fill. */
+/* Opaque, so the web behind the section never shows through a question: the surface tint over
+   the page color, stacked into one solid fill that matches a translucent box on the plain page. */
 .faq__item {
   position: relative; border-radius: 16px; border: 1px solid var(--surface-border);
-  background: linear-gradient(var(--surface), var(--surface)), linear-gradient(var(--section-bg), var(--section-bg)), var(--bg);
+  background: linear-gradient(var(--surface), var(--surface)), var(--bg);
   transition: border-color 0.5s;
 }
 .faq__q {
