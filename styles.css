@@ -267,6 +267,34 @@ input { font-family: inherit; }
 .perk__title { font-size: 18px; font-weight: 900; margin-bottom: 8px; }
 .perk__desc { font-size: 15px; line-height: 1.5; color: var(--muted); transition: color 0.5s; }
 
+/* ---------- FAQ ----------
+   Native <details>/<summary>: keyboard- and screen-reader-friendly with no JS. The marker is a
+   plus drawn in CSS that turns into a cross when the question is open. */
+.faq { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+.faq__item {
+  border-radius: 16px; background: var(--surface); border: 1px solid var(--surface-border);
+  transition: background-color 0.5s, border-color 0.5s;
+}
+.faq__q {
+  list-style: none; cursor: pointer; position: relative;
+  padding: 18px 56px 18px 20px; font-size: 16px; font-weight: 700; line-height: 1.4;
+}
+.faq__q::-webkit-details-marker { display: none; }
+.faq__q::before, .faq__q::after {
+  content: ""; position: absolute; right: 22px; top: 50%; width: 14px; height: 2px; margin-top: -1px;
+  background: currentColor; border-radius: 2px; transition: transform 0.25s ease;
+}
+.faq__q::after { transform: rotate(90deg); }
+.faq__item[open] .faq__q::before { transform: rotate(45deg); }
+.faq__item[open] .faq__q::after { transform: rotate(135deg); }
+.faq__q:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; border-radius: 16px; }
+.faq__a { padding: 0 20px 20px; font-size: 15px; line-height: 1.6; color: var(--muted); transition: color 0.5s; }
+.faq__item[open] .faq__a { animation: faq-open 0.3s ease; }
+@keyframes faq-open { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+.faq__link { text-decoration: underline; text-underline-offset: 3px; }
+/* A "Learn more" link on its own line under an answer; fit-content keeps the click target to the text. */
+.faq__more { display: block; width: fit-content; margin-top: 8px; }
+
 /* ---------- Waitlist ---------- */
 .waitlist {
   padding: 112px 24px; background: var(--wl-section-bg); color: var(--wl-section-fg);
@@ -384,11 +412,16 @@ input { font-family: inherit; }
   /* Tighten the two biggest internal gaps so the content clears the fold. */
   .section--fit .wi__intro { margin-bottom: 57px; }
   .section--fit .eyebrow--center { margin-bottom: 24px; }
+  /* Same for the FAQ, so all eight questions fit on a laptop or phone screen when they're closed. */
+  #faq .sec__head { margin-bottom: 24px; }
+  .faq { gap: 8px; }
+  .faq__q { padding-top: 13px; padding-bottom: 13px; }
 }
 
 /* Respect reduced-motion preferences */
 @media (prefers-reduced-motion: reduce) {
-  .ticker__track, .features__track, .net__orbit, .net__node, .badge__dot, .status__dot, .status__step::before { animation: none !important; }
+  .ticker__track, .features__track, .net__orbit, .net__node, .badge__dot, .status__dot, .status__step::before, .faq__a { animation: none !important; }
+  .faq__q::before, .faq__q::after { transition: none; }
   .features { overflow-x: auto; }
   html { scroll-behavior: auto; }
   /* No price-flash pulse either — numbers still update, just without the blink. */

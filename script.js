@@ -506,6 +506,7 @@
       var href = a.getAttribute("href") || "";
       if (href.indexOf("github.com") > -1) countEvent("click-github", "GitHub");
       else if (href.indexOf("docs.bazaar.finance") > -1) countEvent("click-docs", "Docs");
+      else if (href === "#faq") countEvent("click-faq", "FAQ");
       else if (href === "#waitlist") countEvent("click-waitlist-cta", "Waitlist CTA");
     });
   }

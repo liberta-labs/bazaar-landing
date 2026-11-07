@@ -62,8 +62,9 @@ started by hand from there.
 2. **What is Bazaar** — positioning + ten feature cards (horizontal marquee)
 3. **Trading on Bazaar** — four trader-facing differences (no account, gasless, non-crypto markets, isolated collateral)
 4. **Run by independent operators** — the six-role wheel with descriptions
-5. **Waitlist** — "Where we are" status strip + Brevo-connected email capture
-6. **Footer** — motto, developer credit, GitHub, Docs, Contact
+5. **Frequently asked questions** — eight collapsible questions (native `<details>`, no JS)
+6. **Waitlist** — "Where we are" status strip + Brevo-connected email capture
+7. **Footer** — motto, developer credit, GitHub, Docs, Contact
 
 ## How things work
 

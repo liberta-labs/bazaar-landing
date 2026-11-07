@@ -30,7 +30,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <!-- Version query on both assets: bump it whenever styles.css or script.js changes, so a visitor
        never pairs fresh HTML with a stale cached script or stylesheet during the CDN's 10-minute window. -->
-  <link rel="stylesheet" href="styles.css?v=20261107" />
+  <link rel="stylesheet" href="styles.css?v=20261108.3" />
   <!-- Set theme before first paint to avoid a flash -->
   <script>
     try {
@@ -67,6 +67,7 @@
         <img data-logo="light" class="nav__logo" src="assets/bazaar-logo-new.png" alt="Bazaar" />
       </a>
       <div class="nav__links">
+        <a href="#faq" class="nav__link">FAQ</a>
         <a href="https://docs.bazaar.finance" target="_blank" rel="noopener" class="nav__link">Docs</a>
         <a href="https://github.com/liberta-labs/bazaar" target="_blank" rel="noopener" class="nav__link">GitHub</a>
         <a href="#waitlist" class="btn-get">Get access</a>
@@ -327,6 +328,50 @@
     </div>
   </section>
 
+  <!-- ===================== FAQ ===================== -->
+  <section id="faq" class="section section--band section--fit">
+    <div class="container">
+      <div class="sec__head" data-reveal>
+        <h2 class="sec__title">Frequently asked questions</h2>
+        <p class="sec__sub sec__sub--md">The short answers. The <a class="faq__link" href="https://docs.bazaar.finance" target="_blank" rel="noopener">docs</a> have the full detail.</p>
+      </div>
+      <div class="faq" data-reveal style="--reveal-delay:0.1s">
+        <details class="faq__item">
+          <summary class="faq__q">What can I trade, and who decides what gets listed?</summary>
+          <p class="faq__a">Almost any asset with an on-chain price feed: crypto, stocks, indices, FX and commodities. No one approves markets. Anyone can propose one by posting a bond and seeding its insurance fund. <a class="faq__link faq__more" href="https://docs.bazaar.finance/protocol/listing.html" target="_blank" rel="noopener">Learn more</a></p>
+        </details>
+        <details class="faq__item">
+          <summary class="faq__q">Where do I trade?</summary>
+          <p class="faq__a">Liberta Labs will ship an official app. Because the protocol is open, third-party frontends, bots and trading terminals can connect to it too.</p>
+        </details>
+        <details class="faq__item">
+          <summary class="faq__q">How much leverage can I use?</summary>
+          <p class="faq__a">Up to 25× in calm, well-funded markets, and less as volatility rises. Stock and FX markets allow about half that, and new markets start capped at 5× (2.5× for stocks and FX) until they build a track record. <a class="faq__link faq__more" href="https://docs.bazaar.finance/protocol/margin.html" target="_blank" rel="noopener">Learn more</a></p>
+        </details>
+        <details class="faq__item">
+          <summary class="faq__q">What are the fees?</summary>
+          <p class="faq__a">In calm markets, makers pay 0.25 bp and takers 0.75 bp. Taker fees rise only when a market gets riskier or its insurance fund needs topping up. A frontend may add 0.25 bp. <a class="faq__link faq__more" href="https://docs.bazaar.finance/protocol/fees.html" target="_blank" rel="noopener">Learn more</a></p>
+        </details>
+        <details class="faq__item">
+          <summary class="faq__q">Who holds my funds?</summary>
+          <p class="faq__a">You do, through the contracts. There are no admin keys, so nobody can move or freeze your deposit.</p>
+        </details>
+        <details class="faq__item">
+          <summary class="faq__q">How is this different from dYdX or Hyperliquid?</summary>
+          <p class="faq__a">Both run their own blockchains, where validators operate the order book and the protocol can be upgraded. Bazaar is a set of immutable contracts on Arbitrum: no admin keys, no upgrades, and anyone can list a market.</p>
+        </details>
+        <details class="faq__item">
+          <summary class="faq__q">Is there a token?</summary>
+          <p class="faq__a">Not today. Bazaar runs without one, and since the contracts are immutable, no token could ever govern them.</p>
+        </details>
+        <details class="faq__item">
+          <summary class="faq__q">Has it been audited?</summary>
+          <p class="faq__a">Not yet. The code is open source on GitHub, and a professional audit comes before mainnet. The roadmap below shows where things stand.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
   <!-- ===================== Waitlist ===================== -->
   <section id="waitlist" class="waitlist">
     <div class="waitlist__inner">
@@ -368,7 +413,7 @@
     </div>
   </footer>
 
-  <script src="script.js?v=20261028.3" defer></script>
+  <script src="script.js?v=20261108" defer></script>
 
   <!-- GoatCounter — cookieless, no consent banner required. Counts the pageview on load;
        click events are wired up in initAnalytics() in script.js. -->
