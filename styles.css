@@ -119,7 +119,9 @@ input { font-family: inherit; }
 
 .hero__title {
   font-size: clamp(28px, 8.2vw, 40px); font-weight: 900; letter-spacing: -0.025em;
-  line-height: 1.05; margin: 0 auto 20px; max-width: 768px;
+  /* Width in em, not px: the headline then breaks into the same lines at every font size
+     (Trade / anything, / anytime, / without permission.) instead of reflowing between breakpoints. */
+  line-height: 1.05; margin: 0 auto 20px; max-width: 10.67em;
 }
 .hero__glitch-wrap { display: inline-block; margin-top: 16px; }
 
