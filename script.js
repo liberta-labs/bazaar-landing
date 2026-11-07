@@ -402,7 +402,7 @@
   // tab is hidden, and drawn as a single still frame under reduced motion:
   //  - default (Trading on Bazaar): a faint mesh of slowly drifting nodes that link whenever they
   //    come within reach of each other, so the network keeps re-forming with no hub.
-  //  - data-mode="web" (FAQ): a fixed, interconnected web whose nodes slowly blink out of step.
+  //  - data-mode="web" (FAQ): an interconnected web that sways gently while its nodes blink.
   function initMesh() {
     [].forEach.call(document.querySelectorAll(".mesh-bg"), function (canvas) {
       if (!canvas.getContext) return;
@@ -501,11 +501,12 @@
     onThemeChange(function () { rgb = accentRgb(); draw(); });
   }
 
-  // A fixed web: nodes on a loosely jittered grid, each joined to its nearest neighbours. Only the
-  // nodes change, each brightening and dimming on its own slow cycle. The web is laid out once per
-  // width over more height than the section has, so a section that grows (an FAQ answer opening)
-  // uncovers more of the same web instead of reshuffling it. Its lines are drawn once into an
-  // offscreen canvas, so each frame only composites them and redraws the nodes.
+  // An interconnected web: nodes on a loosely jittered grid, each joined to its nearest neighbours.
+  // Every node sways a few pixels around its own anchor on a slow loop, carrying its lines with it,
+  // and brightens and dims on its own cycle; the connections never change, so the web breathes
+  // rather than drifts apart. It is laid out once per width over more height than the section has,
+  // so a section that grows (an FAQ answer opening) uncovers more of the same web instead of
+  // reshuffling it.
   function setupWeb(canvas) {
     var section = canvas.parentElement;
     var ctx = canvas.getContext("2d");
@@ -514,13 +515,17 @@
     var SPACING = 110;                    // px between nodes before jitter
     var NEIGHBOURS = 3;                   // each node links to this many nearest nodes
     var EXTRA = 1200;                     // px of web laid out below the section's current height
+    var SWAY = 7;                         // px a node strays from its anchor at most
+    var SWAY_MIN = 14, SWAY_MAX = 26;     // seconds per sway loop, picked per node and axis
     var LINE_ALPHA = 0.07;
     var NODE_RADIUS = 3;                  // px
     var NODE_MIN = 0.08, NODE_MAX = 0.55; // node opacity at the dim and bright ends of a blink
     var BLINK_MIN = 3, BLINK_MAX = 7;     // seconds per blink, picked per node
-    var w = 0, h = 0, dpr = 1, nodes = [], edges = [], laidOutForWidth = 0;
-    var rgb = accentRgb(), lines = document.createElement("canvas");
-    var running = false, rafId = 0;
+    var w = 0, h = 0, nodes = [], edges = [], laidOutForWidth = 0;
+    var rgb = accentRgb(), running = false, rafId = 0;
+    var TAU = Math.PI * 2;
+
+    function rand(a, b) { return a + Math.random() * (b - a); }
 
     function layout() {
       var fieldH = h + EXTRA;
@@ -530,10 +535,12 @@
       for (var r = 0; r <= rows; r++) {
         for (var c = 0; c <= cols; c++) {
           nodes.push({
-            x: (c + (Math.random() - 0.5) * 0.7) * cw,
-            y: (r + (Math.random() - 0.5) * 0.7) * rh,
-            period: BLINK_MIN + Math.random() * (BLINK_MAX - BLINK_MIN),
-            phase: Math.random() * Math.PI * 2
+            ax: (c + (Math.random() - 0.5) * 0.7) * cw,
+            ay: (r + (Math.random() - 0.5) * 0.7) * rh,
+            sx: TAU / rand(SWAY_MIN, SWAY_MAX), sy: TAU / rand(SWAY_MIN, SWAY_MAX),
+            px: Math.random() * TAU, py: Math.random() * TAU,
+            blink: TAU / rand(BLINK_MIN, BLINK_MAX), pb: Math.random() * TAU,
+            x: 0, y: 0
           });
         }
       }
@@ -543,7 +550,7 @@
         var near = [];
         nodes.forEach(function (b, j) {
           if (i === j) return;
-          var dx = a.x - b.x, dy = a.y - b.y, d = dx * dx + dy * dy;
+          var dx = a.ax - b.ax, dy = a.ay - b.ay, d = dx * dx + dy * dy;
           if (d < reach) near.push([d, j]);
         });
         near.sort(function (p, q) { return p[0] - q[0]; });
@@ -554,42 +561,37 @@
       });
     }
 
-    function drawLines() {
-      var lc = lines.getContext("2d");
-      lc.setTransform(dpr, 0, 0, dpr, 0, 0);
-      lc.clearRect(0, 0, w, h);
-      lc.lineWidth = 1;
-      lc.strokeStyle = "rgba(" + rgb + "," + LINE_ALPHA + ")";
-      lc.beginPath();
-      edges.forEach(function (e) {
-        var a = nodes[e[0]], b = nodes[e[1]];
-        if (a.y > h + SPACING && b.y > h + SPACING) return;
-        lc.moveTo(a.x, a.y); lc.lineTo(b.x, b.y);
-      });
-      lc.stroke();
-    }
-
     function size() {
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
       w = section.clientWidth; h = section.clientHeight;
       canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
-      lines.width = canvas.width; lines.height = canvas.height;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       if (laidOutForWidth !== w) { laidOutForWidth = w; layout(); }
-      drawLines();
     }
 
     function draw(t) {
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(lines, 0, 0);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      var secs = (t || 0) / 1000;
+      var secs = reduced ? 0 : (t || 0) / 1000;
+      var limit = h + SPACING;
       nodes.forEach(function (p) {
-        if (p.y > h + 4) return;
+        p.x = p.ax + (reduced ? 0 : SWAY * Math.sin(secs * p.sx + p.px));
+        p.y = p.ay + (reduced ? 0 : SWAY * Math.sin(secs * p.sy + p.py));
+      });
+      ctx.clearRect(0, 0, w, h);
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = "rgba(" + rgb + "," + LINE_ALPHA + ")";
+      ctx.beginPath();
+      edges.forEach(function (e) {
+        var a = nodes[e[0]], b = nodes[e[1]];
+        if (a.ay > limit && b.ay > limit) return;
+        ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+      });
+      ctx.stroke();
+      nodes.forEach(function (p) {
+        if (p.ay > h + SWAY + 4) return;
         // Squaring the wave keeps a node dim most of the time, so brightening reads as a blink.
-        var wave = reduced ? 0.35 : Math.pow(0.5 + 0.5 * Math.sin(secs * 2 * Math.PI / p.period + p.phase), 2);
+        var wave = reduced ? 0.35 : Math.pow(0.5 + 0.5 * Math.sin(secs * p.blink + p.pb), 2);
         ctx.fillStyle = "rgba(" + rgb + "," + (NODE_MIN + (NODE_MAX - NODE_MIN) * wave).toFixed(3) + ")";
-        ctx.beginPath(); ctx.arc(p.x, p.y, NODE_RADIUS, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(p.x, p.y, NODE_RADIUS, 0, TAU); ctx.fill();
       });
     }
 
@@ -608,7 +610,7 @@
     size(); draw(0);
     if ("ResizeObserver" in window) new ResizeObserver(function () { size(); draw(performance.now()); }).observe(section);
     whileVisible(section, setRunning);
-    onThemeChange(function () { rgb = accentRgb(); drawLines(); draw(performance.now()); });
+    onThemeChange(function () { rgb = accentRgb(); draw(performance.now()); });
   }
 
   /* ---------- FAQ: one answer open at a time ---------- */

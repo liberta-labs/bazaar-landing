@@ -114,9 +114,9 @@ itself, so with JS off or reduced motion on, everything is simply visible.
 
 **Node-network backdrops.** Two `<canvas class="mesh-bg">` backdrops, drawn by `initMesh()` in the
 theme's accent color. Behind "Trading on Bazaar", a faint mesh of drifting nodes links up as nodes
-come near each other (`setupMesh()`). Behind the FAQ, `data-mode="web"` draws a fixed, interconnected
-web whose nodes slowly blink out of step (`setupWeb()`); the web is laid out over extra height, so
-opening an answer never reshuffles it. Both idle when off screen or in a hidden tab, and draw one
+come near each other (`setupMesh()`). Behind the FAQ, `data-mode="web"` draws an interconnected web
+whose nodes sway a few pixels on slow loops and blink out of step (`setupWeb()`); its connections
+never change, and it is laid out over extra height, so opening an answer never reshuffles it. Both idle when off screen or in a hidden tab, and draw one
 still frame under reduced motion. Density, speed, blink timing and opacity are the constants at the
 top of each function. An open FAQ question also gets a thin accent bar on its left edge.
 
