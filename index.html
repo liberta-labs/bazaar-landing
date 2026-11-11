@@ -30,7 +30,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <!-- Version query on both assets: bump it whenever styles.css or script.js changes, so a visitor
        never pairs fresh HTML with a stale cached script or stylesheet during the CDN's 10-minute window. -->
-  <link rel="stylesheet" href="styles.css?v=20261110" />
+  <link rel="stylesheet" href="styles.css?v=20261111.2" />
   <!-- Set theme before first paint to avoid a flash -->
   <script>
     try {
@@ -70,7 +70,6 @@
         <a href="#faq" class="nav__link">FAQ</a>
         <a href="https://docs.bazaar.finance" target="_blank" rel="noopener" class="nav__link">Docs</a>
         <a href="https://github.com/liberta-labs/bazaar" target="_blank" rel="noopener" class="nav__link">GitHub</a>
-        <a href="#waitlist" class="btn-get">Get access</a>
         <button id="themeToggle" class="btn-toggle" type="button" aria-label="Toggle color theme">☀️</button>
       </div>
     </div>
@@ -271,7 +270,7 @@
     <div class="container">
       <div class="sec__head" data-reveal>
         <h2 class="sec__title">Run by independent operators, not a team</h2>
-        <p class="sec__sub sec__sub--lg">Six independent roles keep the protocol running. These roles are open to anyone. Everyone earns.</p>
+        <p class="sec__sub sec__sub--lg">Six independent roles keep the protocol running and permissionless. Anyone can take one on, and every role earns.</p>
       </div>
       <div class="net__grid">
         <svg class="net__svg" data-reveal viewBox="0 0 420 420" role="img" aria-label="Six protocol roles orbiting the Bazaar core">
@@ -329,8 +328,10 @@
   </section>
 
   <!-- ===================== FAQ ===================== -->
-  <section id="faq" class="section section--fit has-mesh">
-    <canvas class="mesh-bg" data-mode="web" aria-hidden="true"></canvas>
+  <!-- One wrapper for the FAQ and the roadmap strip, so the web backdrop runs behind both. -->
+  <div class="has-mesh faq-wrap">
+  <canvas class="mesh-bg" data-mode="web" aria-hidden="true"></canvas>
+  <section id="faq" class="section section--fit">
     <div class="container">
       <div class="sec__head" data-reveal>
         <h2 class="sec__title">Frequently asked questions</h2>
@@ -373,33 +374,20 @@
     </div>
   </section>
 
-  <!-- ===================== Waitlist ===================== -->
-  <section id="waitlist" class="waitlist">
-    <div class="waitlist__inner">
-      <!-- Project status. Advance it by moving the is-now class and adding is-done to the stages behind it. -->
-      <div class="status" data-reveal>
-        <p class="eyebrow status__eyebrow">Where we are</p>
-        <ol class="status__track" aria-label="Project status">
-          <li class="status__step is-done"><span class="status__dot"></span><span class="status__label">Build</span></li>
-          <li class="status__step is-now"><span class="status__dot"></span><span class="status__label">Testnet</span></li>
-          <li class="status__step"><span class="status__dot"></span><span class="status__label">Audit</span></li>
-          <li class="status__step"><span class="status__dot"></span><span class="status__label">Mainnet</span></li>
-        </ol>
-      </div>
-      <div class="waitlist__card" data-reveal style="--reveal-delay:0.1s">
-        <h2 class="waitlist__title">Want in early?</h2>
-        <p class="waitlist__sub">Drop your email and we'll let you know when testnet is ready.</p>
-        <form class="wl__form" id="waitlistForm" method="POST" action="https://47262c6c.sibforms.com/serve/MUIFAPwFdpAdywX_xZl3SFPY8-3a-V5ydyqN-ZoZnMfEEFXpaibPG3fYnzo2ikvy4eBrq9hujYRgqKMN0wQioajmRboDA8DxMrbkofQ8eGPNsv-TkXe4QE5ZnmgWUM9YyyDC5zeHDXTEp7GJWSH3dgStMd59Rk1xYCKPfChX7nvK9qmNxDai74fR_Fv58zhYDYbXGBQtP86k0BroAw==" target="brevo_iframe">
-          <input class="wl__input" id="waitlistEmail" type="email" name="EMAIL" required autocomplete="email" placeholder="your@email.com" />
-          <button class="wl__btn" type="submit">Notify me</button>
-          <input type="text" name="email_address_check" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute; left:-5000px; width:1px; height:1px; opacity:0;" />
-          <input type="hidden" name="locale" value="en" />
-        </form>
-        <div class="wl__success" id="waitlistSuccess" hidden>You're on the list ⚡</div>
-        <iframe name="brevo_iframe" title="Brevo subscription" aria-hidden="true" tabindex="-1" style="display:none;"></iframe>
-      </div>
+  <!-- ===================== Roadmap ===================== -->
+  <section id="roadmap" class="roadmap">
+    <!-- Project status. Advance it by moving the is-now class and adding is-done to the stages behind it. -->
+    <div class="status" data-reveal>
+      <p class="eyebrow status__eyebrow">Where we are</p>
+      <ol class="status__track" aria-label="Project status">
+        <li class="status__step is-done"><span class="status__dot"></span><span class="status__label">Build</span></li>
+        <li class="status__step is-now"><span class="status__dot"></span><span class="status__label">Testnet</span></li>
+        <li class="status__step"><span class="status__dot"></span><span class="status__label">Audit</span></li>
+        <li class="status__step"><span class="status__dot"></span><span class="status__label">Mainnet</span></li>
+      </ol>
     </div>
   </section>
+  </div>
 
   <!-- ===================== Footer ===================== -->
   <footer class="footer">
@@ -414,7 +402,7 @@
     </div>
   </footer>
 
-  <script src="script.js?v=20261110.2" defer></script>
+  <script src="script.js?v=20261111" defer></script>
 
   <!-- GoatCounter — cookieless, no consent banner required. Counts the pageview on load;
        click events are wired up in initAnalytics() in script.js. -->

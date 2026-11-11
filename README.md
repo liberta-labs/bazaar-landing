@@ -13,7 +13,7 @@ Framework-free: no build step, no bundler, no npm install. Open `index.html` and
 bazaar-landing/
 ├── index.html      # All markup and copy
 ├── styles.css      # Styles, theme tokens, responsive breakpoints
-├── script.js       # Live prices, theme toggle, glitch, drag marquee, confetti
+├── script.js       # Live prices, theme toggle, glitch, drag marquee, backdrops, FAQ
 ├── CNAME           # Custom domain for GitHub Pages — bazaar.finance
 ├── robots.txt      # Allows crawling except /scripts/; points at the sitemap
 ├── sitemap.xml     # One-page sitemap for search consoles
@@ -63,7 +63,7 @@ started by hand from there.
 3. **Trading on Bazaar** — four trader-facing differences (no account, gasless, non-crypto markets, isolated collateral)
 4. **Run by independent operators** — the six-role wheel with descriptions
 5. **Frequently asked questions** — eight collapsible questions, one open at a time (native `<details name="faq">`, with a small JS fallback)
-6. **Waitlist** — "Where we are" status strip + Brevo-connected email capture
+6. **Where we are** — the roadmap strip, sharing the FAQ's web backdrop
 7. **Footer** — motto, developer credit, GitHub, Docs, Contact
 
 ## How things work
@@ -120,13 +120,13 @@ itself, so with JS off or reduced motion on, everything is simply visible.
 
 **Node-network backdrops.** Two `<canvas class="mesh-bg">` backdrops, drawn by `initMesh()` in the
 theme's accent color. Behind "Trading on Bazaar", a faint mesh of drifting nodes links up as nodes
-come near each other (`setupMesh()`). Behind the FAQ, `data-mode="web"` draws an interconnected web
+come near each other (`setupMesh()`). Behind the FAQ and the roadmap strip (one wrapper holds both), `data-mode="web"` draws an interconnected web
 whose nodes sway a few pixels on slow loops and blink out of step (`setupWeb()`); its connections
 never change, and it is laid out over extra height, so opening an answer never reshuffles it. Both idle when off screen or in a hidden tab, and draw one
 still frame under reduced motion. Density, speed, blink timing and opacity are the constants at the
 top of each function. An open FAQ question also gets a thin accent bar on its left edge.
 
-**Status strip.** The four stages in the waitlist section are static markup. Finished stages carry
+**Status strip.** The four stages in the roadmap strip below the FAQ are static markup. Finished stages carry
 `is-done` (filled dot); the current one carries `is-now` (a blinking hollow ring). To advance, move
 `is-now` forward and add `is-done` to the stage it left.
 
@@ -135,14 +135,8 @@ top of each function. An open FAQ question also gets a thin accent bar on its le
 logo must be same-origin), download the PNG, and overwrite the asset whenever the headline or
 logo changes. The `og:` / `twitter:` tags in `index.html` point at the live URL.
 
-**Waitlist.** Posts to Brevo through a hidden iframe, so the page never navigates away and
-the card keeps its own styling. On a valid submission the form is replaced by the
-confirmation badge and a confetti burst fires. Invalid or empty emails are blocked by native
-validation and never show the confirmation. To repoint it at a different list, swap the
-`action` URL on `#waitlistForm`.
-
 **Reduced motion.** `prefers-reduced-motion` disables the ticker, wheel rotation, the pulsing
-badge and status-strip dots, the status-strip flow, marquee, scroll reveal, and confetti.
+badge and status-strip dots, the status-strip flow, marquee, and scroll reveal.
 
 ## Editing
 
@@ -174,4 +168,3 @@ Bing Webmaster Tools (both need a DNS TXT record to verify the domain). Bump `<l
 ## Notes
 
 - Fonts (Syne + Inter) load from Google Fonts. Self-host them if you need full offline use.
-- The waitlist confirmation is cosmetic beyond the Brevo POST — there's no backend of your own.

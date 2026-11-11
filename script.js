@@ -5,7 +5,7 @@
    - Dark / light theme toggle (persisted to localStorage)
    - Glitch/flicker effect on the "without permission" box
    - Hover-to-play snek video on the same box
-   - Cosmetic waitlist form
+   - Feature marquee, scroll reveal, node-network backdrops, FAQ accordion
    ============================================================ */
 (function () {
   "use strict";
@@ -199,84 +199,6 @@
     if (video) video.addEventListener("ended", endHover);
 
     schedule();
-  }
-
-  /* ---------- Confetti burst (dependency-free) ---------- */
-  function fireConfetti(originEl) {
-    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    var colors = ["#FDE000", "#ffffff", "#000000", "#22d3ee", "#ef4444"];
-    var canvas = document.createElement("canvas");
-    canvas.style.cssText = "position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:9999;";
-    document.body.appendChild(canvas);
-    var ctx = canvas.getContext("2d");
-    var dpr = Math.min(window.devicePixelRatio || 1, 2);
-    function size() { canvas.width = innerWidth * dpr; canvas.height = innerHeight * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); }
-    size();
-
-    // Burst originates from the target element's center (fallback: screen center).
-    var ox = innerWidth / 2, oy = innerHeight / 2;
-    if (originEl) { var r = originEl.getBoundingClientRect(); ox = r.left + r.width / 2; oy = r.top + r.height / 2; }
-
-    var N = 140, parts = [];
-    for (var i = 0; i < N; i++) {
-      var ang = Math.PI * 2 * (i / N) + (Math.random() - 0.5);
-      var speed = 6 + Math.random() * 9;
-      parts.push({
-        x: ox, y: oy,
-        vx: Math.cos(ang) * speed, vy: Math.sin(ang) * speed - 4,
-        w: 6 + Math.random() * 6, h: 8 + Math.random() * 8,
-        rot: Math.random() * Math.PI, vr: (Math.random() - 0.5) * 0.4,
-        color: colors[(Math.random() * colors.length) | 0],
-        life: 0, ttl: 90 + Math.random() * 50
-      });
-    }
-
-    var frame = 0, maxFrames = 160;
-    function tick() {
-      ctx.clearRect(0, 0, innerWidth, innerHeight);
-      var alive = false;
-      for (var i = 0; i < parts.length; i++) {
-        var p = parts[i];
-        if (p.life > p.ttl) continue;
-        alive = true;
-        p.life++;
-        p.vy += 0.35;            // gravity
-        p.vx *= 0.99;            // drag
-        p.x += p.vx; p.y += p.vy; p.rot += p.vr;
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.rotate(p.rot);
-        ctx.globalAlpha = Math.max(0, 1 - p.life / p.ttl);
-        ctx.fillStyle = p.color;
-        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
-        ctx.restore();
-      }
-      frame++;
-      if (alive && frame < maxFrames) requestAnimationFrame(tick);
-      else remove();
-    }
-    var removed = false;
-    function remove() { if (!removed) { removed = true; canvas.remove(); } }
-    requestAnimationFrame(tick);
-    setTimeout(remove, 5000); // hard fallback if rAF is throttled (backgrounded tab)
-  }
-
-  /* ---------- Waitlist (cosmetic) ---------- */
-  function initWaitlist() {
-    var form = document.getElementById("waitlistForm");
-    var success = document.getElementById("waitlistSuccess");
-    if (!form || !success) return;
-    // The form POSTs to Brevo via the hidden "brevo_iframe" (see target attr), so the
-    // page never navigates away. Native validation blocks invalid emails before submit
-    // fires, so this only runs once a valid address is on its way to Brevo.
-    form.addEventListener("submit", function () {
-      form.hidden = true;
-      form.style.display = "none";
-      success.hidden = false;
-      fireConfetti(success);
-      countEvent("waitlist-signup", "Waitlist signup");
-    });
   }
 
   /* ---------- Price ticker: seamless infinite marquee ---------- */
@@ -549,7 +471,7 @@
     var EXTRA = 1200;                     // px of web laid out below the section's current height
     var SWAY = 7;                         // px a node strays from its anchor at most
     var SWAY_MIN = 14, SWAY_MAX = 26;     // seconds per sway loop, picked per node and axis
-    var LINE_ALPHA = 0.07;
+    var LINE_ALPHA = 0.05;
     var NODE_RADIUS = 3;                  // px
     var NODE_MIN = 0.08, NODE_MAX = 0.55; // node opacity at the dim and bright ends of a blink
     var BLINK_MIN = 3, BLINK_MAX = 7;     // seconds per blink, picked per node
@@ -682,7 +604,6 @@
       if (href.indexOf("github.com") > -1) countEvent("click-github", "GitHub");
       else if (href.indexOf("docs.bazaar.finance") > -1) countEvent("click-docs", "Docs");
       else if (href === "#faq") countEvent("click-faq", "FAQ");
-      else if (href === "#waitlist") countEvent("click-waitlist-cta", "Waitlist CTA");
     });
   }
 
@@ -691,7 +612,6 @@
     initTheme();
     initAnalytics();
     initGlitch();
-    initWaitlist();
     initFeatures();
     initReveal();
     initMesh();
