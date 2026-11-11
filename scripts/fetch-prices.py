@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fetch equity, index, gold and FX prices at build time and write prices.json.
+"""Fetch equity, ETF, gold and FX prices at build time and write prices.json.
 
 Runs in the Pages deploy workflow (stdlib only, no pip installs). The browser
 can't call Yahoo directly (no CORS header), but the Actions runner can, so these
@@ -20,7 +20,7 @@ import urllib.request
 SYMBOLS = {
     "TSLA": "TSLA/USD",
     "SPCX": "SPCX/USD",  # SpaceX — public on NASDAQ since June 2026
-    "^GSPC": "SPX/USD",  # the S&P 500 index itself — Bazaar lists an index, not its ETF
+    "SPY": "SPY/USD",  # broad-index ETF: Bazaar's listing rules accept SPY/QQQ, not indices themselves
     "ASML": "ASML/USD",
     "GC=F": "XAU/USD",  # front-month gold futures, the usual spot proxy (Yahoo has no spot XAU)
     "EURUSD=X": "EUR/USD",  # intraday interbank rate; beats the once-daily ECB fixing

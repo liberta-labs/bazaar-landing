@@ -81,7 +81,7 @@ the choice to `localStorage` (per device). It intentionally does *not* follow th
   swap in the friendlier `/v2/exchange-rates` endpoint — it's server-cached and sits
   still for minutes, which makes the ticker look dead. Prices flash briefly on change
   (disabled under reduced motion).
-- **Everything else (TSLA, SPCX, ASML, SPX via ^GSPC, XAU via GC=F, EUR via EURUSD=X)** —
+- **Everything else (TSLA, SPCX, ASML, SPY, XAU via GC=F, EUR via EURUSD=X)** —
   browsers can't call Yahoo Finance (no CORS header), so `scripts/fetch-prices.py`
   runs inside the deploy workflow, which also fires on a 5-minute Sun–Fri cron
   (GitHub's floor; scheduled runs can lag a few minutes under load). It writes
@@ -92,8 +92,8 @@ the choice to `localStorage` (per device). It intentionally does *not* follow th
   prices.json.
 
 Every pair is seeded in `script.js` and in the markup, so nothing looks empty if a
-source is slow or blocked. SPX is the S&P 500 index itself (`^GSPC`), not the SPY ETF,
-because Bazaar's listing rules point proposers at an index rather than its tracker. XAU is
+source is slow or blocked. The S&P 500 appears as the SPY ETF rather than the index, because
+Bazaar's listing rules accept broad-index ETFs (SPY, QQQ) but not indices themselves. XAU is
 the front-month gold future (`GC=F`), the usual proxy for spot gold — Yahoo has no spot XAU
 symbol.
 

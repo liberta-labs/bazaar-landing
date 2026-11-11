@@ -30,11 +30,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Bake equity, index and gold prices into the artifact (browsers can't call Yahoo
+      # Bake equity, ETF and gold prices into the artifact (browsers can't call Yahoo
       # directly — no CORS). Never fails the deploy: on fetch trouble the script
       # falls back to the currently-live prices.json, and failing that the page
       # uses its seeded values.
-      - name: Fetch equity, index and gold prices
+      - name: Fetch equity, ETF and gold prices
         run: python3 scripts/fetch-prices.py
 
       - uses: actions/configure-pages@v5
