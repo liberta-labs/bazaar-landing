@@ -7,7 +7,10 @@
 
 /* ---------- Reset ---------- */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; scroll-padding-top: 56px; overflow-x: hidden; width: 100%; }
+/* The fixed nav's full height: the launch banner (36px) over the 56px logo row. Everything that
+   has to clear the nav (anchor jumps, the hero, fit-to-screen sections) uses this. */
+:root { --nav-h: 92px; }
+html { scroll-behavior: smooth; scroll-padding-top: var(--nav-h); overflow-x: hidden; width: 100%; }
 body {
   font-family: 'Syne', 'Inter', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -67,8 +70,10 @@ input { font-family: inherit; }
   position: fixed; top: 0; left: 0; width: 100%; z-index: 50;
   backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
   background: var(--nav-bg); border-bottom: 1px solid var(--border);
-  transition: background-color 0.5s, border-color 0.5s;
+  transition: background-color 0.5s, border-color 0.5s, transform 0.3s ease;
 }
+/* Slid out of view while the page scrolls down (script.js, initHeaderHide). */
+.nav.is-hidden { transform: translateY(-100%); }
 .nav__inner {
   max-width: 1024px; margin: 0 auto; padding: 0 24px; height: 56px;
   display: flex; align-items: center; justify-content: space-between;
@@ -78,6 +83,28 @@ input { font-family: inherit; }
 .nav__logo { height: 28px; }
 .nav__links { display: flex; align-items: center; gap: 16px; font-size: 14px; font-weight: 700; }
 .nav__link { display: none; color: var(--muted); transition: color 0.5s; }
+
+/* Launch banner, across the top of the nav, in the page's inverted colors (like the cards). */
+.announce {
+  height: 36px; display: flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 0 16px; font-size: 13px; font-weight: 700; white-space: nowrap;
+  background: var(--card-bg); color: var(--card-fg);
+  transition: background-color 0.5s, color 0.5s;
+}
+.announce:hover { opacity: 1; }
+.announce:hover .announce__cta { text-decoration: underline; }
+.announce__dot { width: 8px; height: 8px; flex: none; background: #4ade80; border-radius: 9999px; animation: bazaar-blink 2.8s ease-in-out infinite; }
+.announce__cta { opacity: 0.75; }
+/* Narrow phones: the whole banner is the link, so the arrow alone says where it goes. */
+@media (max-width: 420px) { .announce__cta-text { display: none; } }
+
+/* The App button: always shown, phones included, as the one way into the app from the nav. */
+.btn-app {
+  display: inline-flex; align-items: center; height: 36px; padding: 0 18px; border-radius: 9999px;
+  background: var(--card-bg); color: var(--card-fg); font-size: 14px; font-weight: 700;
+  box-shadow: 0 4px 14px var(--shadow); transition: background-color 0.5s, color 0.5s, transform 0.3s;
+}
+.btn-app:hover { opacity: 1; transform: scale(1.05); }
 
 .btn-toggle {
   width: 36px; height: 36px; border-radius: 9999px;
@@ -90,17 +117,10 @@ input { font-family: inherit; }
 /* ---------- Hero ---------- */
 /* 100svh = the viewport minus mobile browser chrome (URL bar), so the ticker lands at the
    real bottom edge on phones. The 100vh line stays first as a fallback. */
-.hero { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; padding-top: 56px; }
+.hero { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; padding-top: var(--nav-h); }
 .hero__center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 24px 16px; }
 .hero__content { width: 100%; max-width: 1024px; margin: 0 auto; text-align: center; }
 
-.badge {
-  display: inline-flex; align-items: center; gap: 8px;
-  font-size: 12px; font-weight: 700; padding: 8px 16px; border-radius: 9999px; margin-bottom: 24px;
-  background: var(--card-bg); color: var(--card-fg); box-shadow: 0 4px 14px var(--shadow);
-  transition: background-color 0.5s, color 0.5s;
-}
-.badge__dot { width: 8px; height: 8px; background: #4ade80; border-radius: 9999px; animation: bazaar-blink 2.8s ease-in-out infinite; }
 
 .hero__title {
   font-size: clamp(28px, 8.2vw, 40px); font-weight: 900; letter-spacing: -0.025em;
@@ -166,9 +186,9 @@ input { font-family: inherit; }
 
 /* ---------- Section scaffolding ---------- */
 .section { padding: 112px 24px; }
-/* Fit-to-screen sections fill the viewport below the fixed 56px nav, so an anchor jump (which
+/* Fit-to-screen sections fill the viewport below the fixed nav, so an anchor jump (which
    lands them under the nav) centres their content in what is actually visible. */
-.section--fit { min-height: calc(100vh - 56px); min-height: calc(100svh - 56px); display: flex; flex-direction: column; justify-content: center; }
+.section--fit { min-height: calc(100vh - var(--nav-h)); min-height: calc(100svh - var(--nav-h)); display: flex; flex-direction: column; justify-content: center; }
 .section--band {
   background: var(--section-bg);
   border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
@@ -344,7 +364,7 @@ input { font-family: inherit; }
 @keyframes glitchFlash { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
 @keyframes bazaar-orbit-spin { to { transform: rotate(360deg); } }
 @keyframes bazaar-orbit-spin-rev { to { transform: rotate(-360deg); } }
-/* Status-LED blink for the "In development" dot: lit ~2.2s, then a soft
+/* Status-LED blink for the launch banner's dot: lit ~2.2s, then a soft
    fade to black (off) and back — background-color animates, not opacity. */
 @keyframes bazaar-blink {
   0%, 78% { background-color: #4ade80; }
@@ -396,7 +416,8 @@ input { font-family: inherit; }
 
 /* Respect reduced-motion preferences */
 @media (prefers-reduced-motion: reduce) {
-  .ticker__track, .features__track, .net__orbit, .net__node, .badge__dot, .status__dot, .status__step::before, .faq__a { animation: none !important; }
+  .ticker__track, .features__track, .net__orbit, .net__node, .announce__dot, .status__dot, .status__step::before, .faq__a { animation: none !important; }
+  .nav { transition: background-color 0.5s, border-color 0.5s; }
   .faq__q::before, .faq__q::after, .faq__item::before { transition: none; }
   .features { overflow-x: auto; }
   html { scroll-behavior: auto; }

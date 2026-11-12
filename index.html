@@ -24,13 +24,15 @@
   <meta name="twitter:title" content="Bazaar | Trade anything. Anytime. Without permission." />
   <meta name="twitter:description" content="Perpetual futures on stocks, crypto, FX and more, on a fully on-chain order book. Immutable, permissionless, no company behind it." />
   <meta name="twitter:image" content="https://bazaar.finance/assets/og-image.png" />
-  <link rel="icon" type="image/png" href="assets/bazaar-logo-icon.png" />
+  <!-- Versioned like the stylesheet: browsers and the CDN keep a tab icon long after it changes. -->
+  <link rel="icon" type="image/png" href="assets/bazaar-logo-icon.png?v=20261112" />
+  <link rel="apple-touch-icon" href="assets/bazaar-logo-icon.png?v=20261112" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <!-- Version query on both assets: bump it whenever styles.css or script.js changes, so a visitor
        never pairs fresh HTML with a stale cached script or stylesheet during the CDN's 10-minute window. -->
-  <link rel="stylesheet" href="styles.css?v=20261111.2" />
+  <link rel="stylesheet" href="styles.css?v=20261112.4" />
   <!-- Set theme before first paint to avoid a flash -->
   <script>
     try {
@@ -61,6 +63,12 @@
 
   <!-- ===================== Nav ===================== -->
   <nav class="nav">
+    <!-- Launch banner: part of the fixed nav, so it stays in view; --nav-h in styles.css counts its height. -->
+    <a class="announce" href="https://app.bazaar.finance" target="_blank" rel="noopener">
+      <span class="announce__dot" aria-hidden="true"></span>
+      <span>Bazaar is now live on testnet</span>
+      <span class="announce__cta"><span class="announce__cta-text">Try the app </span><span aria-hidden="true">&rarr;</span></span>
+    </a>
     <div class="nav__inner">
       <a href="#top" aria-label="Bazaar home" class="nav__brand">
         <img data-logo="dark" class="nav__logo" src="assets/bazaar-logo-yellow.png" alt="Bazaar" />
@@ -70,6 +78,7 @@
         <a href="#faq" class="nav__link">FAQ</a>
         <a href="https://docs.bazaar.finance" target="_blank" rel="noopener" class="nav__link">Docs</a>
         <a href="https://github.com/liberta-labs/bazaar" target="_blank" rel="noopener" class="nav__link">GitHub</a>
+        <a href="https://app.bazaar.finance" target="_blank" rel="noopener" class="btn-app">App</a>
         <button id="themeToggle" class="btn-toggle" type="button" aria-label="Toggle color theme">☀️</button>
       </div>
     </div>
@@ -79,10 +88,6 @@
   <section id="top" class="hero">
     <div class="hero__center">
       <div class="hero__content">
-        <div class="badge">
-          <span class="badge__dot"></span>
-          In development
-        </div>
         <h1 class="hero__title">
           Trade anything, anytime, <br />
           <span class="hero__glitch-wrap">
@@ -344,7 +349,7 @@
         </details>
         <details class="faq__item" name="faq">
           <summary class="faq__q">Where do I trade?</summary>
-          <p class="faq__a">Liberta Labs will ship an official app. Because the protocol is open, third-party frontends, bots and trading terminals can connect to it too.</p>
+          <p class="faq__a">In the official app at <a class="faq__link" href="https://app.bazaar.finance" target="_blank" rel="noopener">app.bazaar.finance</a>, live now on testnet with free test USDC to try it with. Because the protocol is open, third-party frontends, bots and trading terminals can connect to it too.</p>
         </details>
         <details class="faq__item" name="faq">
           <summary class="faq__q">How much leverage can I use?</summary>
@@ -381,8 +386,8 @@
       <p class="eyebrow status__eyebrow">Where we are</p>
       <ol class="status__track" aria-label="Project status">
         <li class="status__step is-done"><span class="status__dot"></span><span class="status__label">Build</span></li>
-        <li class="status__step is-now"><span class="status__dot"></span><span class="status__label">Testnet</span></li>
-        <li class="status__step"><span class="status__dot"></span><span class="status__label">Audit</span></li>
+        <li class="status__step is-done"><span class="status__dot"></span><span class="status__label">Testnet</span></li>
+        <li class="status__step is-now"><span class="status__dot"></span><span class="status__label">Audit</span></li>
         <li class="status__step"><span class="status__dot"></span><span class="status__label">Mainnet</span></li>
       </ol>
     </div>
@@ -402,7 +407,7 @@
     </div>
   </footer>
 
-  <script src="script.js?v=20261112" defer></script>
+  <script src="script.js?v=20261112.2" defer></script>
 
   <!-- GoatCounter — cookieless, no consent banner required. Counts the pageview on load;
        click events are wired up in initAnalytics() in script.js. -->

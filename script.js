@@ -6,6 +6,7 @@
    - Glitch/flicker effect on the "without permission" box
    - Hover-to-play snek video on the same box
    - Feature marquee, scroll reveal, node-network backdrops, FAQ accordion
+   - Header that slides away while scrolling down and returns on scroll up
    ============================================================ */
 (function () {
   "use strict";
@@ -580,6 +581,37 @@
     });
   }
 
+  /* ---------- Header: out of the way while reading down ---------- */
+  // The fixed header (launch banner + logo row) slides up while the page scrolls down and comes
+  // back on any scroll up, and always at the top of the page. It stays put while focus is inside
+  // it, so a keyboard user tabbing through its links never loses them.
+  function initHeaderHide() {
+    var nav = document.querySelector(".nav");
+    if (!nav) return;
+    var lastY = window.scrollY;
+    var JITTER = 6; // px: ignore tiny scroll wobbles (trackpad momentum, mobile URL bar)
+
+    // Run on each scroll event directly: browsers already fire them at most once per frame, and the
+    // work is one class toggle.
+    function update() {
+      var y = window.scrollY;
+      var dy = y - lastY;
+      if (y <= nav.offsetHeight || nav.contains(document.activeElement)) {
+        nav.classList.remove("is-hidden");
+      } else if (dy > JITTER) {
+        nav.classList.add("is-hidden");
+      } else if (dy < -JITTER) {
+        nav.classList.remove("is-hidden");
+      } else {
+        return; // too small to count: keep the reference point until the move adds up
+      }
+      lastY = y;
+    }
+
+    window.addEventListener("scroll", update, { passive: true });
+    nav.addEventListener("focusin", function () { nav.classList.remove("is-hidden"); });
+  }
+
   /* ---------- Analytics ---------- */
   // GoatCounter events. These are counted separately from pageviews and show up under
   // their own paths in the dashboard. count.js loads async and is a routine ad-block
@@ -593,7 +625,7 @@
   }
 
   // Delegated, so it covers every copy of a link without touching the markup: Docs
-  // appears three times and GitHub twice, and clicks frequently land on the inline
+  // appears three times, GitHub and the app twice, and clicks frequently land on the inline
   // SVG inside the footer links rather than on the anchor itself.
   function initAnalytics() {
     document.addEventListener("click", function (e) {
@@ -604,12 +636,14 @@
       if (href.indexOf("github.com") > -1) countEvent("click-github", "GitHub");
       else if (href.indexOf("docs.bazaar.finance") > -1) countEvent("click-docs", "Docs");
       else if (href === "#faq") countEvent("click-faq", "FAQ");
+      else if (href.indexOf("app.bazaar.finance") > -1) countEvent("click-app", "App");
     });
   }
 
   /* ---------- Boot ---------- */
   function boot() {
     initTheme();
+    initHeaderHide();
     initAnalytics();
     initGlitch();
     initFeatures();
