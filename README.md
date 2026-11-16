@@ -19,8 +19,7 @@ bazaar-landing/
 ├── sitemap.xml     # One-page sitemap for search consoles
 ├── README.md
 ├── scripts/
-│   ├── fetch-prices.py  # Build-time equity/index/gold fetch → prices.json (not committed)
-│   └── og-image.html    # Draws assets/og-image.png (the social share image) on a canvas
+│   └── fetch-prices.py  # Build-time equity/index/gold fetch → prices.json (not committed)
 ├── .github/
 │   └── workflows/
 │       ├── deploy.yml      # Deploys every push to master + every 5 min Sun-Fri
@@ -31,7 +30,7 @@ bazaar-landing/
     ├── bazaar-logo-new.png       # Horizontal logo — light mode
     ├── bazaar-logo-icon.png      # Favicon
     ├── bazaar-emblem-yellow.png  # Center emblem of the roles wheel
-    ├── og-image.png              # 1200×630 Open Graph / Twitter card image
+    ├── og-image.png              # 1200×630 Open Graph / Twitter card image: the logo banner
     └── snek.mp4                  # Plays inside the hero glitch box (cropped to the visible strip, ~460 KB)
 ```
 
@@ -130,10 +129,13 @@ top of each function. An open FAQ question also gets a thin accent bar on its le
 `is-done` (filled dot); the current one carries `is-now` (a blinking hollow ring). To advance, move
 `is-now` forward and add `is-done` to the stage it left.
 
-**Share image.** `assets/og-image.png` is what X, Telegram, Discord and Slack show for a link.
-`scripts/og-image.html` draws it from the hero headline on a canvas — open it over HTTP (the
-logo must be same-origin), download the PNG, and overwrite the asset whenever the headline or
-logo changes. The `og:` / `twitter:` tags in `index.html` point at the live URL.
+**Share image.** `assets/og-image.png` is what X, Telegram, Discord and Slack show for a link: the
+Bazaar logo banner (black on yellow), centred on a 1200×630 card of the same yellow, since those
+sites crop a wider image to about 1.9:1 and would cut into the logo. Made from the 2000×624 banner with
+`ffmpeg -f lavfi -i "color=c=0xFDDF00:s=1200x630:d=1,format=rgba" -i banner.webp -filter_complex
+"[1:v]scale=1200:374:flags=lanczos,format=rgba[fg];[0:v][fg]overlay=0:128:format=rgb,format=rgb24"
+-frames:v 1 og-image.png`. The `og:` / `twitter:` tags in `index.html` point at the live URL with a
+`?v=` date: bump it when the image changes, since those sites cache the image by its address.
 
 **Reduced motion.** `prefers-reduced-motion` disables the ticker, wheel rotation, the pulsing
 badge and status-strip dots, the status-strip flow, marquee, and scroll reveal.
